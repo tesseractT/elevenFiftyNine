@@ -34,7 +34,6 @@ class AuthenticatedSessionController extends Controller
         } else if ($request->user()->role === 'vendor') {
             return redirect()->intended(RouteServiceProvider::VENDOR_HOME);
         }
-
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 
