@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="{{ asset('backend/assets/modules/weather-icon/css/weather-icons-wind.min.css') }}">
     <link rel="stylesheet" href="{{ asset('backend/assets/modules/summernote/summernote-bs4.css') }}">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/2.1.0/css/dataTables.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.0/css/dataTables.bootstrap5.css">
 
     <!-- Template CSS -->
     <link rel="stylesheet" href="{{ asset('backend/assets/css/style.css') }}">
@@ -82,6 +84,9 @@
     <script src="{{ asset('backend/assets/modules/summernote/summernote-bs4.js') }}"></script>
     <script src="{{ asset('backend/assets/modules/chocolat/dist/js/jquery.chocolat.min.js') }}"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="//cdn.datatables.net/2.1.0/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.1.0/js/dataTables.bootstrap5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Page Specific JS File -->
     <script src="{{ asset('backend/assets/js/page/index-0.js') }}"></script>
@@ -96,6 +101,59 @@
             @endforeach
         @endif
     </script>
+
+    <!-- Dynamic Delete alert -->
+    <script>
+        $('body').on('click', '.delete-item', function(e) {
+            e.preventDefault();
+            let url = $(this).attr('href');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        method: 'DELETE',
+                        url: url,
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                Swal.fire(
+                                    'Deleted!',
+                                    response.message,
+                                    'success'
+                                )
+                                window.location.reload();
+                            } else if (response.status === 'error') {
+                                Swal.fire(
+                                    'Somthing wen\'t wrong!',
+                                    response.message,
+                                    'error'
+                                )
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.log(error);
+                        }
+
+                    })
+
+                }
+            })
+
+        })
+    </script>
+
+    @stack('scripts')
 </body>
 
 </html>
