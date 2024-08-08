@@ -103,6 +103,7 @@
     </script>
 
     <!-- Dynamic Delete alert -->
+
     <script>
         $('body').on('click', '.delete-item', function(e) {
             e.preventDefault();

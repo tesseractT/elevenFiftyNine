@@ -126,7 +126,9 @@ class SliderController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * @param string $id
      */
+
     public function destroy(string $id)
     {
         $slider = Slider::findOrFail($id);
