@@ -2,7 +2,7 @@
 
 namespace App\DataTables;
 
-use App\Models\Slider;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -12,7 +12,7 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class SliderDataTable extends DataTable
+class CategoryDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
@@ -23,28 +23,38 @@ class SliderDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', function ($query) {
-                $editBtn = "<a href='" . route('admin.slider.edit', $query->id) . "' class='btn btn-primary btn-sm'><i class='far fa-edit'></i></a>";
-                $deleteBtn = "<a href='" . route('admin.slider.destroy', $query->id) . "' class='btn btn-danger btn-sm ml-2 delete-item'><i class='far fa-trash-alt'></i></a>";
+                $editBtn = "<a href='" . route('admin.category.edit', $query->id) . "' class='btn btn-primary btn-sm'><i class='far fa-edit'></i></a>";
+                $deleteBtn = "<a href='" . route('admin.category.destroy', $query->id) . "' class='btn btn-danger btn-sm ml-2 delete-item'><i class='far fa-trash-alt'></i></a>";
 
                 return $editBtn . $deleteBtn;
             })
-            ->addColumn('banner', function ($query) {
-                return $img = "<img src='" . asset($query->banner) . "' style='width: 100px; height: 100px;'>";
+            ->addColumn('icon', function ($query) {
+                return '<i style="font-size:30px" class="' . $query->icon . '"></i>';
             })
-            ->addColumn('status', function ($query) {
-                $active = "<i class='badge badge-success'>Active</i>";
-                $inactive = "<i class='badge badge-danger'>Inactive</i>";
 
-                return $query->status ? $active : $inactive;
+            ->addColumn('status', function ($query) {
+                if ($query->status == 1) {
+                    $button = '<label class="custom-switch mt-2">
+                    <input type="checkbox" checked name="status" data-id="' . $query->id . '" class="custom-switch-input change-status">
+                    <span class="custom-switch-indicator"></span>
+                    </label>';
+                } else {
+                    $button = '<label class="custom-switch mt-2">
+                    <input type="checkbox" name="status" data-id="' . $query->id . '" class="custom-switch-input change-status">
+                    <span class="custom-switch-indicator"></span>
+                    </label>';
+                }
+                return $button;
             })
-            ->rawColumns(['banner', 'action', 'status'])
+
+            ->rawColumns(['icon', 'action', 'status'])
             ->setRowId('id');
     }
 
     /**
      * Get the query source of dataTable.
      */
-    public function query(Slider $model): QueryBuilder
+    public function query(Category $model): QueryBuilder
     {
         return $model->newQuery();
     }
@@ -55,7 +65,7 @@ class SliderDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('slider-table')
+            ->setTableId('category-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
             //->dom('Bfrtip')
@@ -77,16 +87,14 @@ class SliderDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-
-            Column::make('id')->width(10),
-            Column::make('banner')->width(200),
-            Column::make('title'),
-            Column::make('serial_no'),
-            Column::make('status'),
+            Column::make('id'),
+            Column::make('icon'),
+            Column::make('name'),
+            Column::make('status')->width(100),
             Column::computed('action')
                 ->exportable(false)
                 ->printable(false)
-                ->width(100)
+                ->width(200)
                 ->addClass('text-center'),
         ];
     }
@@ -96,6 +104,6 @@ class SliderDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Slider_' . date('YmdHis');
+        return 'Category_' . date('YmdHis');
     }
 }
